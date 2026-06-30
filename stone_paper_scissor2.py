@@ -1,65 +1,71 @@
-import random #random is a built-in module is use to pick randomly.
-       
-score = 0 #In every code starting it will be at zero. 
-computer_score = 0
-total=0
-a =str(input('what is your name:  '))
+import random  # built-in module, used here to let the computer pick randomly
 
-if a not in ' ':
-    print(f'{a}! welcome to game.')
-    while True:    
-        list_of_the_game_stone_paper_scissor=['stone','paper','scissor']
-        c = random.choice(list_of_the_game_stone_paper_scissor) #it the random.choice who will choose the string.
-        print('i have choosed')  #computer choice.
-        d = input('Itis your turn to chose. What you have choosed: ') #for input what you choosed.
-        if d=='exit':
-              #it will break when type exit and imparts accuracy.
-              if total == 0:
-                    print('NO GAME PLAYED.')
-              else:
-                    print('--------:THE ACCURACY:-------')
-                    print (f'the score is {score}')
-                    print(f'{a}! accuracy is {score/total*100}.')
-                    print (f'the score of computer is {computer_score}')
-                    print (f'Computer accuracy {computer_score/total*100}.')
-                    if score>computer_score :
-                         print(f'RESULT- {a} you are the winner.')
-                    if computer_score > score:
-                         print('RESULT- Computer is the winner.')                                    
-              print ('thanks for playing it')
-              break #it is for stop and break the continuously path
-                    
-        if  d == ' ' or d not in ['stone', 'paper', 'scissor']:
-          #it is having the list of the game.
-          #it is for the person if some one doesn't give any input or given wrong input according to list.
-            print('ERROR')
-            print ('RUN AGAIN.')
-            break 
-        else:
-            if c =='stone' and d=='paper':
-            #it will say you win the game.
-                print('YOU WIN🏆.')
-                score+=1
-                total+=1#it will add up the score how much you win.
-             
-            elif c =='paper' and d=='scissor':
-            #it will say you win the game.
-                print('YOU WIN🏆.')
-                score+=1
-                total+=1#it will add up the score how much you win.
-            elif c =='scissor'and d=='stone':
-            #it will say you win the game.
-                print('YOU WIN🏆.')
-                total+=1
-                score+=1
-                #it will add up the score how much you win.
-            elif d==c:
-                total+=1
-                print ('DRAW.')
+# Scores start at zero at the beginning of every run.
+score = 0           # how many rounds YOU win
+computer_score = 0  # how many rounds the COMPUTER wins
+total = 0           # total rounds actually played (win + lose + draw)
+
+name = input('What is your name: ')
+
+# BUG FIX 1: original was "if a not in ' '", which checks if the name is a
+# substring of a single space. That is not what we want. We just want to make
+# sure the player typed an actual name and not blank/spaces. .strip() removes
+# surrounding spaces, so an empty or spaces-only name fails this check.
+if name.strip() != '':
+    print(f'{name}! Welcome to the game.')
+
+    while True:
+        choices = ['stone', 'paper', 'scissor']
+        computer = random.choice(choices)  # the computer's random pick
+
+        you = input('Your turn. Type stone, paper, scissor, or exit: ').lower()
+        # .lower() means "Stone", "STONE" and "stone" all work the same.
+
+        if you == 'exit':
+            # Show the summary when the player chooses to quit.
+            if total == 0:
+                print('NO GAME PLAYED.')
             else:
-            #it will say you lose the game.
-                print('YOU LOSE.')  
-                computer_score+=1
-                print (f'Computer choice {c}')
+                print('--------: THE ACCURACY :--------')
+                print(f'Your score is {score}')
+                print(f'{name}! Your accuracy is {score / total * 100:.1f}%.')
+                print(f'Computer score is {computer_score}')
+                print(f'Computer accuracy is {computer_score / total * 100:.1f}%.')
+
+                if score > computer_score:
+                    print(f'RESULT- {name}, you are the winner.')
+                elif computer_score > score:
+                    print('RESULT- Computer is the winner.')
+                else:
+                    print('RESULT- It is a tie.')
+
+            print('Thanks for playing.')
+            break  # leaves the while loop and ends the program
+
+        # BUG FIX 2: original used "break" here, which ended the whole game on a
+        # single typo. We use "continue" so a bad input just asks again.
+        if you not in choices:
+            print('ERROR: please type stone, paper, scissor, or exit.')
+            continue  # jump back to the top of the loop, do NOT count this round
+
+        # Show what the computer chose so the result makes sense to the player.
+        print(f'Computer chose {computer}.')
+
+        # From here a real round was played, so every outcome below counts.
+        if you == computer:
+            print('DRAW.')
+            total += 1
+        elif (you == 'paper' and computer == 'stone') or \
+             (you == 'scissor' and computer == 'paper') or \
+             (you == 'stone' and computer == 'scissor'):
+            print('YOU WIN.')
+            score += 1
+            total += 1
+        else:
+            # BUG FIX 3: original forgot "total += 1" here, so losses were never
+            # counted. That made the accuracy math wrong. Now losses count too.
+            print('YOU LOSE.')
+            computer_score += 1
+            total += 1
 else:
-    print('ENTER YOUR NAME FIRST FROM NEXT TIME.')
+    print('ENTER YOUR NAME FIRST NEXT TIME.')
